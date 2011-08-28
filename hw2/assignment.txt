@@ -1,0 +1,30 @@
+ELEC5530 / 6530 Mobile Robots
+HW2
+Assigned Fri. 8/26 Due Wed. 8/31
+
+
+Rules: This is a team assignment. Your team may consist of 1, 2, or 3 people.
+Each team should select a “team leader.” You only need to upload your material
+under the team leader’s account, but make sure to list each team member’s name
+on the cover page.
+
+
+
+(1) Consider a differential drive wheeled robot. The wheels are located on each
+side, on the centerline of the chassis, and there is a caster so the robot is
+statically stable. Derive a set of equations that yield the pose as a function
+of the commanded wheel velocities. The equations should give x, y, and θ in the
+global coordinate frame.
+
+(2) Choose two simple cases to illustrate that your equations give the correct
+answers (for those cases).
+
+(3) 6530 students – write a MATLAB simulation of your equations. Include the
+code so I can run it.
+
+
+UPLOAD all relevant files to Blackboard, and also give me hardcopy. The
+assignment is not considered submitted until I have both hardcopy and
+Blackboard versions.
+
+
