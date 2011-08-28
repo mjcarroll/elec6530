@@ -1,18 +1,98 @@
-\documentclass[a4paper,10pt]{article}
+\documentclass[10pt]{amsart}
 \usepackage[utf8x]{inputenc}
 
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
 %opening
-\title{}
-\author{}
+\title{ELEC6530 Homework 2 - Derivation of Differential Drive Kinematics}
+\author{M. Carroll and N. Jha}
+\date{}
 
 \begin{document}
 
 \maketitle
 
-\begin{abstract}
+\section{Model Derivation}
+\subsection{Kinematics - Body Frame}
+\begin{par}
+First, we must derive the kinematics of the model in the body frame.  The coordinate frame of the robot is x forward, y left, and z up.  Theta represents the rotation of the body about the z-axis.  
+The axes form a right-handed coordinate system, so positive theta indicates counter-clockwise rotation.\\
 
-\end{abstract}
+The velocity of the robot can be represented as a pair of vectors.  $\vec{v}$ represents the linear velocity (forwards and backwards) of the robot, and $\vec{w}$ represents the angular velocity (rotation)
+of the robot.\\
 
-\section{}
+Given $\omega_{R}$ and $\omega_{L}$, the wheel speeds of the right and left wheels, we can represent the linear and angular velocity of the differential drive robot as follows.\\
+\end{par}
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{./robot.png}
+ % robot.png: 576x733 pixel, 72dpi, 20.32x25.86 cm, bb=0 0 576 733
+ \caption{Physical Configuration of the Robot}
+ \label{fig:robotparams}
+\end{figure}
+
+\begin{equation}
+  \begin{aligned}
+    v &= \dfrac{r_R}{2} \omega_R + \dfrac{r_L}{2} \omega_L \\
+    w &= \dfrac{r_L}{d} \omega_R - \dfrac{r_L}{d} \omega_L
+  \end{aligned}
+\end{equation}
+\\
+Where $r_{R}$ and $r_{L}$ are the wheel radii of the left and right wheels, and $d$ is the width of the wheelbase.
+
+
+\subsection{Kinematics - Inertial Frame}
+Second the kinematics of the robot in the global coordinate frame.  The global coordinate frame is represented in the figure below.
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.4,keepaspectratio=true]{./global.png}
+ % global.png: 410x418 pixel, 72dpi, 14.46x14.74 cm, bb=0 0 410 418
+ \caption{Robot in the Inertial Coordinate Frame}
+ \label{fig:global}
+\end{figure}
+
+Since v and w are velocities, it is possible to derive the velocity and angular velocity of the robot in the inertial coordinate frame.  The equations of motion are shown below.
+
+\begin{equation}
+\begin{align}
+\dot{x} &= v \cos{\theta} \\
+\dot{y} &= v \sin{\theta} \\
+\dot{\theta} &= \omega
+\end{align}
+\end{equation}
+
+To find the position of the robot, then these time-differentials must be integrated from a beginning time $T_{0}$ to the current time $T$.  Additionally, a constant offset may be added if the robot does not start
+at the origin of the intertial coordinate frame.
+
+\begin{equation}
+\begin{align}
+ x(t) &= \int_{T_{0}}^{T} v(t) \cos{(\theta(t))} dt + X_{0} \\
+ y(t) &= \int_{T_{0}}^{T} v(t) \sin{(\theta(t))} dt + Y_{0} \\
+ \theta(t) &= \int_{T_{0}}^{T} w(t) dt + \theta_{0}
+\end{align}
+\end{equation}
+
+\subsection{Discrete Time Model}
+Often, it is more useful to represent the kinematics of the robot via a discrete-time model.  This model assumes that the continuous values of the motor speeds are sampled at a 
+constant rate $1/\Delta t$ and represented as $v_k$ and $w_k$.  This makes the equations of motion as follows.
+
+\begin{equation}
+ \begin{bmatrix}
+  x \\ y \\ \theta
+ \end{bmatrix}_{k+1} = 
+ \begin{bmatrix}
+  x \\ y \\ \theta
+ \end{bmatrix}_{k} + 
+ \begin{bmatrix}
+  \Delta t v_k \cos{(\theta_k + \Delta t w_k/2)}\\
+  \Delta t v_k \sin{(\theta_k + \Delta t w_k/2)}\\
+  \Delta t w_k
+ \end{bmatrix}
+\end{equation}
 
 \end{document}

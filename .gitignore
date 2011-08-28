@@ -1,0 +1,5 @@
+*.synctex.gz
+*.tex~
+*.tex.backup
+*.log
+*.aux
