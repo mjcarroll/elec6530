@@ -1,11 +1,52 @@
 \documentclass[10pt]{amsart}
 \usepackage[utf8x]{inputenc}
-
+\usepackage{fullpage,fancyheadings}
+\usepackage[pdftex]{graphicx}
+\usepackage[usenames,dvipsnames]{color}
 \usepackage{geometry}
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{epstopdf}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{extramarks}
+\usepackage{chngpage}
+\usepackage{soul}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\definecolor{lightgray}{gray}{0.5}
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0}
+
+% For faster processing, load Matlab syntax for listings
+\lstloadlanguages{Matlab}%
+\lstset{language=Matlab,
+        frame=single,
+        basicstyle=\ttfamily,
+        keywordstyle=[1]\color{Blue}\bf,
+        keywordstyle=[2]\color{Purple},
+        keywordstyle=[3]\color{Blue}\underbar,
+        identifierstyle=,
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small,
+        stringstyle=\color{Purple},
+        showstringspaces=false,
+        tabsize=5,
+        % Put standard MATLAB functions not included in the default
+        % language here
+        morekeywords={xlim,ylim,var,alpha,factorial,poissrnd,normpdf,normcdf},
+        % Put MATLAB function parameters here
+        morekeywords=[2]{on, off, interp},
+        % Put user defined functions here
+        morekeywords=[3]{FindESS},
+        morecomment=[l][\color{Blue}]{...},
+        numbers=left,
+        firstnumber=1,
+        numberstyle=\tiny\color{Blue},
+        stepnumber=5
+        }
+
 
 %opening
 \title{ELEC6530 Homework 2 - Derivation of Differential Drive Kinematics}
@@ -38,7 +79,7 @@ Given $\omega_{R}$ and $\omega_{L}$, the wheel speeds of the right and left whee
 \begin{equation}
   \begin{aligned}
     v &= \dfrac{r_R}{2} \omega_R + \dfrac{r_L}{2} \omega_L \\
-    w &= \dfrac{r_L}{d} \omega_R - \dfrac{r_L}{d} \omega_L
+    w &= \dfrac{r_R}{d} \omega_R - \dfrac{r_L}{d} \omega_L
   \end{aligned}
 \end{equation}
 \\
@@ -94,5 +135,90 @@ constant rate $1/\Delta t$ and represented as $v_k$ and $w_k$.  This makes the e
   \Delta t w_k
  \end{bmatrix}
 \end{equation}
+
+\section{Simple Tests of Kinematic Model}
+\subsection{Equal, Contant Wheel Velocities}
+Basic intuition tells us that if both wheels are at the same speed, then the robot will drive in a straight line in the direction that it started in.  This can be seen from our simulation results below.
+
+The robot was started heading towards 0 degrees (the x-axis), and then each wheel was commanded to the same speed.  The robot travels in the x-direction throughout the entire simulation.
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{equalconstantpose.png}
+ \caption{Pose of the Robot vs Time with Equal, Constant Wheel Speeds}
+ \label{fig:equalconstantpose}
+\end{figure}
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{equalconstantplane.png}
+ \caption{Top-Down view of Robot Motion with Equal, Constant Wheel Speeds}
+ \label{fig:equalconstantplane}
+\end{figure}
+
+
+\newpage
+\subsection{Unequal, Constant Wheel Velocities}
+Once again, intuition tells us that if one wheel rotates faster than the other, the robot will drive in a large arc, and given enough time, a circle.  This can bee seen from our simulation results below.
+
+The robot was started heading towards 0 degrees (the x-axis), and the right wheel was commanded to faster than the left wheel by a factor of 5.  The robot travels in a circle.
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{unequalconstantpose.png}
+ \caption{Pose of the Robot vs Time with Unequal, Constant Wheel Speeds}
+ \label{fig:unequalconstantpose}
+\end{figure}
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{unequalconstantplane.png}
+ \caption{Top-Down view of Robot Motion with Unequal, Constant Wheel Speeds}
+ \label{fig:unequalconstantplane}
+\end{figure}
+
+\newpage
+\subsection{Equal, Noisy Wheel Velocities}
+For a better test of the simulation, we also added in unit normally-distributed noise to the motor velocity commands to see the effect.
+
+When the wheels were commanded to an equal velocity before the noise was applied, the robot ``wandered'' to the left and right of the x-axis line, but generally stayed around it.
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{equalnoisepose.png}
+ \caption{Pose of the Robot vs Time with Equal, Noisy Wheel Speeds}
+ \label{fig:equalnoisepose}
+\end{figure}
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{equalnoiseplane.png}
+ \caption{Top-Down view of Robot Motion with Equal, Noisy Wheel Speeds}
+ \label{fig:equalnoiseplane}
+\end{figure}
+
+
+\newpage
+\subsection{Unequal, Noisy Wheel Velocities}
+When the wheels were commanded to an unequal velocity before the noise was applied, the robot ``wandered'' around a circular path, but couldn't repeat the path in multiple rotations.
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{unequalnoisepose.png}
+ \caption{Pose of the Robot vs Time with Unequal, Noisy Wheel Speeds}
+ \label{fig:unequalnoisepose}
+\end{figure}
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5,keepaspectratio=true]{unequalnoiseplane.png}
+ \caption{Top-Down view of Robot Motion with Unequal, Noisy Wheel Speeds}
+ \label{fig:unequalnoiseplane}
+\end{figure}
+
+\newpage
+\section{MATLAB Simulation Code}
+
+\lstinputlisting[language=Matlab]{../simulator.m}
 
 \end{document}
