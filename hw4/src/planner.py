@@ -13,6 +13,8 @@ class Planner(object):
     
     def __init__(self, start, goal, costmap):
         self.costmap = costmap
+        costmap.cells[start].state = 'start'
+        costmap.cells[goal].state = 'goal'
         self.start = start
         self.goal = goal
         self.showWeights = False
@@ -54,15 +56,16 @@ class Planner(object):
                 self.board.blit(text1,(r.centerx-size/2+2,r.centery-self.fontHeight))
                 self.board.blit(text2,(r.centerx-size/2+2,r.centery))
                 self.board.blit(text3,(r.centerx-size/2+2,r.centery+self.fontHeight))
+            elif self.costmap.cells[(xIndex,yIndex)].f_score is not None:
+                s = "%2.0f"%self.costmap.cells[(xIndex,yIndex)].f_score
+                text = self.font.render(s,1,self.COLORS['white'])
+                self.board.blit(text,(r.centerx-size/2+2,r.centery))
 
     def drawStart(self):
         self.drawCell(self.start[0], self.start[1], self.COLORS['bright_green'])
     
     def drawGoal(self):
         self.drawCell(self.goal[0], self.goal[1], self.COLORS['red'])
-    
-    def iterate(self):
-        pass
     
     def getCell(self, x, y):
         return self.costmap.cells[(x, y)]
@@ -72,6 +75,12 @@ class Planner(object):
     
     def getGoalCell(self):
         return self.costmap.cells[self.goal]
+    
+    def startFinding(self):
+        pass
+    
+    def iterate(self):
+        return True
     
     
 class Astar(Planner):
@@ -207,29 +216,4 @@ class Astar(Planner):
     @classmethod
     def naive(cls, cell0, cell1):
         return 0
-    
-class Brushfire(Planner):
-    def startFinding(self):
-        self.search = set()
-        self.next_value = 1
-        self.explored_list = set()
-        
-        for x in range(0,self.costmap.width_sz):
-            for y in range(0,self.costmap.height_sz):
-                if self.costmap.cells[(x,y)].state == 'Wall':
-                    self.search.add((x,y))
-  
-    def iterate(self):
-        search = copy.deepcopy(self.search)
-        print "Searching %d nodes"%len(search)
-        for node in self.search.:
-            self.search.remove(node)
-            for x in self.costmap.orthogonals(node):
-                if self.costmap.cells[x].state != 'Wall' and x not in self.explored_list:
-                    self.costmap.cells[x].f_score = self.next_value
-                    self.search.add(x)
-                    self.explored_list.add(x)            
-                    if x != self.start and x!=self.goal:
-                        self.drawCell(x[0],x[1],(70,self.next_value*1,self.next_value*1))
-        self.next_value += 1
         

@@ -19,7 +19,9 @@ class Cell(object):
 
 class Costmap(object):
     COLORS = {'wall':(0,0,0),
+              'Wall':(0,0,0),
               'gray' :(112,128,144),
+              None : (112, 128, 144),
               'start':(0,204,102),
               'goal':(255,44,0)}
     
@@ -35,6 +37,7 @@ class Costmap(object):
         self.resolution = resolution
         self.cell_size = cell_size
         self.cells = {}
+        self.obstacles = {}
         
         for x in range(self.width_sz):
             for y in range(self.height_sz):
@@ -80,18 +83,27 @@ class Costmap(object):
         for i in range(0, self.width_sz):
             self.cells[(i, 0)].state = 'Wall'
             self.cells[(i, self.height_sz - 1)].state = 'Wall'
+            self.obstacles.add((i,0))
+            self.obstacles.add((i,self.height_sz - 1))
             self.draw_cell(board, i, 0, self.cell_size, self.COLORS['wall'])
             self.draw_cell(board, i, self.height_sz - 1, self.cell_size, self.COLORS['wall'])
         for i in range(0, self.height_sz):
             self.cells[(0, i)].state = 'Wall'
             self.cells[(self.width_sz - 1, i)].state = 'Wall'
+            self.obstacles.add((0,i))
+            self.obstacles.add((self.width_sz-1,i))
             self.draw_cell(board, 0, i, self.cell_size, self.COLORS['wall'])
             self.draw_cell(board, self.width_sz - 1, i, self.cell_size, self.COLORS['wall'])
         
     def addObstacle(self,board, x, y, w, h):
+        self.obstacles[(x,y)] = set()
         for i in range(x + 1, x + w + 1):
             for j in range(y + 1, y + h + 1):
                 self.cells[(i, j)].state = 'Wall'
+                if i == x+1 or i == x+w:
+                    self.obstacles[(x,y)].add((i,j))
+                if j == y+1 or j == y+w:
+                    self.obstacles[(x,y)].add((i,j))
                 self.draw_cell(board, i, j, self.cell_size, self.COLORS['wall'])
     
     def draw_cell(self, board, xIndex, yIndex, size, color):
@@ -142,3 +154,12 @@ class Costmap(object):
             return self.cells[N].state == 'Wall' or self.cells[W].state == 'Wall'
         else:
             return False # Technically, you've done goofed if you arrive here.
+
+    def draw_map(self, board):
+        for i in range(0, self.width_sz):
+            for j in range(0, self.height_sz):
+                cell = self.cells[(i,j)]
+                self.draw_cell(board,i,j,self.cell_size,self.COLORS[cell.state])
+                
+                    
+        

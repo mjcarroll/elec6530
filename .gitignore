@@ -3,3 +3,5 @@
 *.tex.backup
 *.log
 *.aux
+*.m~
+*.pyc

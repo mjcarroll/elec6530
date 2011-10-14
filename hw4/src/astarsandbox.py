@@ -3,7 +3,8 @@ import sys, pygame, math, heapq, time
 from pygame.locals import *
 
 from costmap import Costmap
-from planner import Astar, Brushfire
+from planner import Astar
+from voronoi import Voronoi
 
 heuristic = "crow"
     
@@ -14,9 +15,12 @@ def showBoard(screen, board):
 def initializePlanner(board, cm, planner="astar", heuristic = None):
     if planner is "astar":
         planner = Astar(heuristic,cm.start,cm.goal,cm)
-        
-    if planner is "brushfire":
-        planner = Brushfire(cm.start,cm.goal,cm)
+    #===========================================================================
+    # if planner is "voronoi":
+    #    planner = Voronoi(cm.start,cm.goal,cm,resolution = 0.1)
+    # if planner is "brushfire":
+    #    planner = Brushfire(cm.start,cm.goal,cm)
+    #===========================================================================
     planner.setPygame(board, cm.cell_size)
     planner.drawStart()
     planner.drawGoal()
@@ -27,9 +31,9 @@ if __name__ == "__main__":
     pygame.font.init()
     pygame.init()
     
-    resolution = 0.25
-    cell_size = 10
-    mode = "brushfire"
+    resolution = 1
+    cell_size = 50
+    mode = "astar"
     
     (cm, board, screen) = Costmap.homeworkFourMap(resolution, cell_size)
     
@@ -40,7 +44,7 @@ if __name__ == "__main__":
     step = False
     reset = False
     showWeights = False
-    fast = True
+    fast = False
     
     while 1:
         for event in pygame.event.get():
@@ -60,23 +64,29 @@ if __name__ == "__main__":
         if one:
             heuristic = "crow"
             reset = True
+            print("A* Algorithm, Euclidean Distance")
         if two:
             heuristic = "manhattan"
             reset = True
+            print("A* Algorithm, Manhattan Distance")
         if three:
             heuristic = "naive"
             reset = True
+            print("A* Algorithm, Naive Heuristic")
         if s:
             reset = True
             step = not step
             time.sleep(0.1)
+            print("Step Mode: %s"%step)
         if w:
             reset = True
             showWeights = not showWeights
             time.sleep(0.1)
+            print("Show Weights: %s"%showWeights)
         if f:
             fast = not fast
             time.sleep(0.1)
+            print("Fast Render: %s"%fast)
         if enter:
             if step is True and isFinished is not True:
                 isFinished = planner.iterate()
@@ -96,5 +106,6 @@ if __name__ == "__main__":
                 isFinished = planner.iterate()
                 if not fast:
                     showBoard(screen, board)
+                    time.sleep(0.01)
             else:
                 showBoard(screen,board)
