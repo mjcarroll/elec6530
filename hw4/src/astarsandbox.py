@@ -31,8 +31,8 @@ if __name__ == "__main__":
     pygame.font.init()
     pygame.init()
     
-    resolution = 1
-    cell_size = 50
+    resolution = 0.1
+    cell_size = 5
     mode = "astar"
     
     (cm, board, screen) = Costmap.homeworkFourMap(resolution, cell_size)
@@ -64,29 +64,27 @@ if __name__ == "__main__":
         if one:
             heuristic = "crow"
             reset = True
-            print("A* Algorithm, Euclidean Distance")
+            time.sleep(0.1)
         if two:
             heuristic = "manhattan"
             reset = True
-            print("A* Algorithm, Manhattan Distance")
+            time.sleep(0.1)
         if three:
             heuristic = "naive"
             reset = True
-            print("A* Algorithm, Naive Heuristic")
+            time.sleep(0.1)
         if s:
             reset = True
             step = not step
             time.sleep(0.1)
-            print("Step Mode: %s"%step)
+            
         if w:
             reset = True
             showWeights = not showWeights
             time.sleep(0.1)
-            print("Show Weights: %s"%showWeights)
         if f:
             fast = not fast
             time.sleep(0.1)
-            print("Fast Render: %s"%fast)
         if enter:
             if step is True and isFinished is not True:
                 isFinished = planner.iterate()
@@ -97,6 +95,11 @@ if __name__ == "__main__":
             cm,board,_ = Costmap.homeworkFourMap(resolution, cell_size, restartScreen=screen)
             showBoard(screen,board)
             planner = initializePlanner(board,cm, planner=mode,heuristic = heuristic)
+            print("Starting Planner: Astar")
+            print("   Heuristic: %s"%heuristic)
+            print("   Show Weights: %s"%showWeights)
+            print("   Fast Render: %s"%fast)
+            print("   Step Mode: %s"%step)
             planner.showWeights = showWeights
             isFinished = False
             reset = False
@@ -106,6 +109,7 @@ if __name__ == "__main__":
                 isFinished = planner.iterate()
                 if not fast:
                     showBoard(screen, board)
-                    time.sleep(0.01)
+                    if cell_size >= 50:
+                        time.sleep(0.05)
             else:
                 showBoard(screen,board)

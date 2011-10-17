@@ -37,7 +37,7 @@ class Costmap(object):
         self.resolution = resolution
         self.cell_size = cell_size
         self.cells = {}
-        self.obstacles = {}
+        self.obstacles = set()
         
         for x in range(self.width_sz):
             for y in range(self.height_sz):
@@ -96,14 +96,13 @@ class Costmap(object):
             self.draw_cell(board, self.width_sz - 1, i, self.cell_size, self.COLORS['wall'])
         
     def addObstacle(self,board, x, y, w, h):
-        self.obstacles[(x,y)] = set()
         for i in range(x + 1, x + w + 1):
             for j in range(y + 1, y + h + 1):
                 self.cells[(i, j)].state = 'Wall'
                 if i == x+1 or i == x+w:
-                    self.obstacles[(x,y)].add((i,j))
+                    self.obstacles.add((i,j))
                 if j == y+1 or j == y+w:
-                    self.obstacles[(x,y)].add((i,j))
+                    self.obstacles.add((i,j))
                 self.draw_cell(board, i, j, self.cell_size, self.COLORS['wall'])
     
     def draw_cell(self, board, xIndex, yIndex, size, color):
